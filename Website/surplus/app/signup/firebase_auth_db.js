@@ -36,6 +36,7 @@ export function signup(email, password){
   const createAccount = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      // Log the user information
       console.log(userCredential.user)
       return { success: true, 
         user: userCredential.user 
