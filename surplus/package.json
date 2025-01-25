@@ -3,7 +3,7 @@
   "displayName": "surplus",
   "publisher": "Surplus",
   "description": "Manage tasks, track expenses, and monitor investments within VS Code",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.96.0"
   },
