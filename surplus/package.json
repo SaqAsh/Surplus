@@ -14,13 +14,14 @@
     "onStartupFinished"
   ],
   "main": "./out/extension.js",
+  "icon": "resources/dark.svg",
   "contributes": {
     "viewsContainers": {
       "activitybar": [
         {
           "id": "surplus-sidebar",
           "title": "Surplus",
-          "icon": "$(wallet)"
+          "icon": "resources/dark.svg"
         }
       ]
     },
