@@ -41,22 +41,20 @@ const vscode = __importStar(require("vscode"));
 const statusBar_1 = require("./statusBar");
 const auth_1 = require("./auth");
 const notifications_1 = require("./notifications");
-const webview_1 = require("./webview");
+const DashboardViewProvider_1 = require("./webview/DashboardViewProvider");
 let statusBar;
 let notificationManager;
-let webviewProvider;
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 async function activate(context) {
     // Initialize components
     statusBar = new statusBar_1.SurplusStatusBar();
     notificationManager = new notifications_1.SurplusNotificationManager(context);
-    webviewProvider = new webview_1.SurplusWebviewProvider(context);
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "surplus" is now active!');
     // Register the webview provider
-    context.subscriptions.push(vscode.window.registerWebviewViewProvider('surplus.dashboardView', webviewProvider));
+    context.subscriptions.push(vscode.window.registerWebviewViewProvider(DashboardViewProvider_1.DashboardViewProvider.viewType, new DashboardViewProvider_1.DashboardViewProvider(context.extensionUri)));
     // Register commands
     let disposables = [
         vscode.commands.registerCommand('surplus.login', () => handleLogin()),

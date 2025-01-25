@@ -4,11 +4,10 @@ import * as vscode from 'vscode';
 import { SurplusStatusBar } from './statusBar';
 import { SurplusAuthProvider } from './auth';
 import { SurplusNotificationManager } from './notifications';
-import { SurplusWebviewProvider } from './webview';
+import { DashboardViewProvider } from './webview/DashboardViewProvider';
 
 let statusBar: SurplusStatusBar;
 let notificationManager: SurplusNotificationManager;
-let webviewProvider: SurplusWebviewProvider;
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -16,7 +15,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Initialize components
 	statusBar = new SurplusStatusBar();
 	notificationManager = new SurplusNotificationManager(context);
-	webviewProvider = new SurplusWebviewProvider(context);
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -25,8 +23,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Register the webview provider
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(
-			'surplus.dashboardView',
-			webviewProvider
+			DashboardViewProvider.viewType,
+			new DashboardViewProvider(context.extensionUri)
 		)
 	);
 

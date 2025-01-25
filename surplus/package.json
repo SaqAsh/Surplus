@@ -21,7 +21,7 @@
         {
           "id": "surplus-sidebar",
           "title": "Surplus",
-          "icon": "resources/dark.svg"
+          "icon": "media/surplus.svg"
         }
       ]
     },
@@ -30,9 +30,7 @@
         {
           "type": "webview",
           "id": "surplus.dashboardView",
-          "name": "Dashboard",
-          "icon": "$(home)",
-          "contextualTitle": "Surplus Dashboard"
+          "name": "Dashboard"
         }
       ]
     },

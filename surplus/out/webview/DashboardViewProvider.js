@@ -24,42 +24,99 @@ class DashboardViewProvider {
                 <title>Surplus Dashboard</title>
                 <style>
                     body {
-                        padding: 20px;
+                        padding: 10px;
+                        color: var(--vscode-foreground);
+                        font-family: var(--vscode-font-family);
                     }
-                    .card {
-                        background: var(--vscode-editor-background);
+                    .accordion {
                         border: 1px solid var(--vscode-widget-border);
                         border-radius: 4px;
-                        padding: 15px;
-                        margin-bottom: 15px;
+                        margin-bottom: 8px;
                     }
-                    .section-title {
-                        color: var(--vscode-foreground);
-                        font-size: 16px;
+                    .accordion-header {
+                        background: var(--vscode-editor-background);
+                        padding: 10px;
+                        cursor: pointer;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
                         font-weight: bold;
-                        margin-bottom: 10px;
+                    }
+                    .accordion-header:hover {
+                        background: var(--vscode-list-hoverBackground);
+                    }
+                    .accordion-content {
+                        padding: 10px;
+                        display: none;
+                        border-top: 1px solid var(--vscode-widget-border);
+                    }
+                    .accordion.active .accordion-content {
+                        display: block;
+                    }
+                    .accordion-icon {
+                        transition: transform 0.3s ease;
+                    }
+                    .accordion.active .accordion-icon {
+                        transform: rotate(90deg);
+                    }
+                    .empty-state {
+                        color: var(--vscode-descriptionForeground);
+                        font-style: italic;
+                        padding: 8px 0;
                     }
                 </style>
             </head>
             <body>
-                <div class="card">
-                    <div class="section-title">Tasks</div>
-                    <div id="tasks-list">
-                        No tasks yet
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <span>Finances</span>
+                        <span class="accordion-icon">▶</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="empty-state">No financial data tracked yet</div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="section-title">Expenses</div>
-                    <div id="expenses-list">
-                        No expenses tracked
+
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <span>Investments</span>
+                        <span class="accordion-icon">▶</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="empty-state">No investments tracked yet</div>
                     </div>
                 </div>
-                <div class="card">
-                    <div class="section-title">Investments</div>
-                    <div id="investments-list">
-                        No investments tracked
+
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <span>Budgeting</span>
+                        <span class="accordion-icon">▶</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="empty-state">No budget items added yet</div>
                     </div>
                 </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <span>Goals</span>
+                        <span class="accordion-icon">▶</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="empty-state">No financial goals set yet</div>
+                    </div>
+                </div>
+
+                <script>
+                    const accordions = document.querySelectorAll('.accordion');
+                    
+                    accordions.forEach(accordion => {
+                        const header = accordion.querySelector('.accordion-header');
+                        header.addEventListener('click', () => {
+                            accordion.classList.toggle('active');
+                        });
+                    });
+                </script>
             </body>
             </html>
         `;
