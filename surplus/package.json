@@ -1,6 +1,7 @@
 {
   "name": "surplus",
   "displayName": "surplus",
+  "publisher": "Surplus",
   "description": "",
   "version": "0.0.1",
   "engines": {
