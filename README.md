@@ -17,10 +17,6 @@ To install the Surplus VSCode extension:
 3. Search for **Surplus**.
 4. Click **Install**.
 
-Alternatively, you can install it directly by clicking the link below:
-
-[Install Surplus](vscode:extension/surplus)
-
 ## Usage
 
 After installation, you can start using Surplus by following these steps:
