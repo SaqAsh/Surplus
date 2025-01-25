@@ -1,6 +1,6 @@
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
-import { Code2, Zap, Shield, Sparkles } from "lucide-react"
+import { ChartNoAxesCombined, NotebookTabs, Wallet } from "lucide-react"
 import Link from "next/link"
 
 export default function Home() {
@@ -32,29 +32,29 @@ export default function Home() {
           <div className="mx-auto grid justify-center gap-4 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
             <div className="relative overflow-hidden rounded-lg border bg-background p-2">
               <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-                <Code2 className="h-12 w-12 text-primary" />
+                <NotebookTabs className="h-12 w-12 text-primary" />
                 <div className="space-y-2">
                   <h3 className="font-bold">Task Management</h3>
                   <p className="text-sm text-muted-foreground">
-                    Keep track of your to-do list and deadlines without leaving VS Code. Get task reminders and manage your workflow efficiently.
+                    Organize tasks and deadlines directly in VS Code. Get smart reminders to stay on track.
                   </p>
                 </div>
               </div>
             </div>
             <div className="relative overflow-hidden rounded-lg border bg-background p-2">
               <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-                <Zap className="h-12 w-12 text-secondary" />
+                <Wallet className="h-12 w-12 text-secondary" />
                 <div className="space-y-2">
                   <h3 className="font-bold">Expense Tracking</h3>
                   <p className="text-sm text-muted-foreground">
-                    Log and track your expenses in real time. Get notifications if you're nearing your budget limits.
+                    Log and track your expenses in real time. Get notifications if you`&apos`re nearing your budget limits.
                   </p>
                 </div>
               </div>
             </div>
             <div className="relative overflow-hidden rounded-lg border bg-background p-2">
               <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
-                <Shield className="h-12 w-12 text-primary" />
+                <ChartNoAxesCombined className="h-12 w-12 text-primary" />
                 <div className="space-y-2">
                   <h3 className="font-bold">Investment Tracker</h3>
                   <p className="text-sm text-muted-foreground">
