@@ -29,7 +29,7 @@ onAuthStateChanged(auth, user => {
   }
 })
 
-connectAuthEmulator(auth, "http://localhost:9099") 
+// connectAuthEmulator(auth, "http://localhost:9099") 
 
 export function signup(email, password){
   // Create new account using email/password
