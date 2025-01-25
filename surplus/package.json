@@ -2,23 +2,76 @@
   "name": "surplus",
   "displayName": "surplus",
   "publisher": "Surplus",
-  "description": "",
-  "version": "0.0.1",
+  "description": "Manage tasks, track expenses, and monitor investments within VS Code",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.96.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "surplus-sidebar",
+          "title": "Surplus",
+          "icon": "$(wallet)"
+        }
+      ]
+    },
+    "views": {
+      "surplus-sidebar": [
+        {
+          "type": "webview",
+          "id": "surplus.dashboardView",
+          "name": "Dashboard",
+          "icon": "$(home)",
+          "contextualTitle": "Surplus Dashboard"
+        }
+      ]
+    },
     "commands": [
       {
-        "command": "surplus.helloWorld",
-        "title": "Hello World"
+        "command": "surplus.login",
+        "title": "Surplus: Login"
+      },
+      {
+        "command": "surplus.logout",
+        "title": "Surplus: Logout"
+      },
+      {
+        "command": "surplus.addTask",
+        "title": "Surplus: Add Task"
+      },
+      {
+        "command": "surplus.addExpense",
+        "title": "Surplus: Add Expense"
+      },
+      {
+        "command": "surplus.viewDashboard",
+        "title": "Surplus: Open Dashboard"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Surplus",
+      "properties": {
+        "surplus.notifications.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable notifications"
+        },
+        "surplus.notifications.reminderTime": {
+          "type": "number",
+          "default": 24,
+          "description": "Hours before due date to send reminder"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
