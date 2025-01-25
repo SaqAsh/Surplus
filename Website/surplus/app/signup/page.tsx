@@ -8,19 +8,33 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
+import { signup } from './firebase_auth_db';
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false)
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
   const router = useRouter()
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault()
     setIsLoading(true)
 
-    // Simulate signup - replace with actual signup logic
-    setTimeout(() => {
-      router.push("/redirect")
-    }, 1000)
+    try {
+      const result = await signup(username, password);
+      if (result.success) {
+        // Successful login
+        setIsLoading(false);
+        router.push('/'); // Navigate to main page
+      } else {
+        setIsLoading(false);
+        // Handle error case if needed
+      }
+    } catch (error) {
+      setIsLoading(false);
+      console.error('Error during signup:', error);
+    }
   }
 
   return (
@@ -48,12 +62,17 @@ export default function SignUp() {
                   autoComplete="email"
                   autoCorrect="off"
                   required
+                  onChange={(e) => setUsername(e.target.value)}
                   disabled={isLoading}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" required disabled={isLoading} />
+                <Input id="password" type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading} />
               </div>
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create account"}
@@ -71,4 +90,5 @@ export default function SignUp() {
     </div>
   )
 }
+
 
