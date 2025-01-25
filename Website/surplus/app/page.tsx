@@ -47,7 +47,7 @@ export default function Home() {
                 <div className="space-y-2">
                   <h3 className="font-bold">Expense Tracking</h3>
                   <p className="text-sm text-muted-foreground">
-                    Log and track your expenses in real time. Get notifications if you're nearing your budget limits.
+                    Log and track your expenses in real time. Get notifications if you`&apos`re nearing your budget limits.
                   </p>
                 </div>
               </div>
