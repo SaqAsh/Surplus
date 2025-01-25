@@ -11,11 +11,11 @@ export default function Home() {
         <section className="space-y-6 pb-8 pt-6 md:pb-12 md:pt-10 lg:py-32">
           <div className="container flex max-w-[64rem] flex-col items-center gap-4 text-center">
             <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold">
-              Supercharge your <span className="text-primary">TypeScript</span> development
+              Supercharge your <span className="text-primary">Productivity</span> In VS Code
             </h1>
             <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
-              Surplus is a powerful VSCode extension that enhances your TypeScript development experience with
-              intelligent features and seamless integration.
+            Surplus is a VSCode extension that helps you manage your tasks, track expenses, and monitor investments all within VS Code.
+            Stay on top of your finances and productivity with intelligent alerts and seamless integrations.
             </p>
             <div className="space-x-4">
               <Button asChild size="lg">
@@ -34,9 +34,9 @@ export default function Home() {
               <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
                 <Code2 className="h-12 w-12 text-primary" />
                 <div className="space-y-2">
-                  <h3 className="font-bold">Smart Completions</h3>
+                  <h3 className="font-bold">Task Management</h3>
                   <p className="text-sm text-muted-foreground">
-                    Intelligent code suggestions that understand your project context.
+                    Keep track of your to-do list and deadlines without leaving VS Code. Get task reminders and manage your workflow efficiently.
                   </p>
                 </div>
               </div>
@@ -45,9 +45,9 @@ export default function Home() {
               <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
                 <Zap className="h-12 w-12 text-secondary" />
                 <div className="space-y-2">
-                  <h3 className="font-bold">Quick Fixes</h3>
+                  <h3 className="font-bold">Expense Tracking</h3>
                   <p className="text-sm text-muted-foreground">
-                    Instant solutions for common TypeScript issues and patterns.
+                    Log and track your expenses in real time. Get notifications if you're nearing your budget limits.
                   </p>
                 </div>
               </div>
@@ -56,9 +56,9 @@ export default function Home() {
               <div className="flex h-[180px] flex-col justify-between rounded-md p-6">
                 <Shield className="h-12 w-12 text-primary" />
                 <div className="space-y-2">
-                  <h3 className="font-bold">Type Safety</h3>
+                  <h3 className="font-bold">Investment Tracker</h3>
                   <p className="text-sm text-muted-foreground">
-                    Enhanced type checking and validation for robust code.
+                    Monitor your stocks, crypto, and investment portfolio with real-time alerts, all within VS Code.
                   </p>
                 </div>
               </div>
