@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rent Reminder</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f9fc;
+      color: #4a4a4a;
+      line-height: 1.6;
+    }
+    .email-container {
+      max-width: 650px;
+      margin: 40px auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-left: 6px solid #4e9fd1;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 32px;
+      color: #1e2a36;
+    }
+    .content {
+      padding: 20px 0;
+      text-align: left;
+    }
+    .content p {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    .content .due-date {
+      font-weight: bold;
+      color: #4e9fd1;
+    }
+    .cta-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .cta {
+      display: inline-block;
+      background-color: #4e9fd1;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      box-shadow: 0 6px 12px rgba(78, 159, 209, 0.2);
+      transition: background-color 0.3s;
+    }
+    .cta:hover {
+      background-color: #2e74b5;
+    }
+    .footer {
+      text-align: center;
+      padding: 20px 0;
+      font-size: 14px;
+      color: #777;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 40px;
+    }
+    .footer p {
+      margin: 5px 0;
+    }
+    #link {
+      color: #00d5ff;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Rent Reminder</h1>
+    </div>
+    <div class="content">
+      <p>Dear [Tenant's Name],</p>
+      <p>This is a reminder that your rent for the month is due on <span class="due-date">[Insert Due Date]</span>.</p>
+      <p>Kindly ensure that your payment is made on time to avoid any late fees.</p>
+
+      <div id="link"></div>
+
+      <p>If you have any questions, feel free to reach out to us.</p>
+
+      <!-- Centered buttons container -->
+      <div class="cta-container">
+        <a href="#" class="cta">Pay Rent Now</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>Thank you for your timely attention.</p>
+      <p>&copy; Surplus | All rights reserved</p>
+    </div>
+  </div>
+</body>
+
+<script>
+    const eventTitle = 'Rent Payment Due';
+    const startDate = '20300201T120000Z'; // Replace with your start date/time
+    const endDate = '20300201T130000Z';   // Replace with your end date/time
+    const eventDetails = 'Reminder to pay rent on time.';
+    const eventLocation = 'Online';
+
+    // Generate the Google Calendar link
+    const calendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startDate}/${endDate}&details=${encodeURIComponent(eventDetails)}&location=${encodeURIComponent(eventLocation)}`;
+
+    // Insert the link into the page
+    document.getElementById('link').innerHTML = `
+      <a href="${calendarLink}" target="_blank" class="cta">Add to Google Calendar</a>
+    `;
+</script>
+
+</html>
