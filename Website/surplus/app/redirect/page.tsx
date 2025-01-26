@@ -4,12 +4,15 @@ import { useEffect } from "react"
 import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { useAuth } from "../contexts/AuthContext"
 
 export default function Redirect() {
+  const {token} = useAuth();
+
   useEffect(() => {
     // Simulate redirect delay
     const timer = setTimeout(() => {
-      window.location.href = "vscode:extension/surplus"
+      window.location.href =  `vscode:extension/surplus?token=${token}`
     }, 3000)
 
     return () => clearTimeout(timer)
@@ -27,7 +30,9 @@ export default function Redirect() {
             <Button
               variant="link"
               className="p-0 h-auto font-normal"
-              onClick={() => (window.location.href = "vscode:extension/surplus")}
+              onClick={() => {
+                window.location.href =  `vscode:extension/surplus?token=${token}`;
+              }}
             >
               here
             </Button>

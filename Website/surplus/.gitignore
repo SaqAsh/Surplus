@@ -8,7 +8,7 @@
 
 # testing
 /coverage
-
+/firebaseKeys
 # next.js
 /.next/
 

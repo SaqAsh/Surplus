@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 import { signup } from './firebase_auth_db';
-import { signInWithGooglePopup } from '../login/firebase_auth_db';
+import { signInWithGooglePopup, signInWithGithubPopup } from '../login/firebase_auth_db';
 import { changeUsername } from '../firebase_database';
 
 export default function SignUp() {
@@ -95,6 +96,21 @@ export default function SignUp() {
                 }
               }}>
                 <FcGoogle /> Sign up with Google 
+              </Button>
+              <Button className="w-full mt-2" variant="outline" onClick={async () => {
+                try {
+                  const result = await signInWithGithubPopup();
+                  if (result.success) {
+                    router.push('/');
+                  } else {
+                    console.error(result.errorMessage || 'An error occurred during Github login');
+                  }
+                } catch (error) {
+
+                  console.error('Error during Github login:', error);
+                }
+              }}>
+                <FaGithub /> Sign up with Github 
               </Button>
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
