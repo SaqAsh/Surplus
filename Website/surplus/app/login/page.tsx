@@ -31,7 +31,7 @@ export default function Login() {
         // Successful login
         changeUsername(username);
         setIsLoading(false);
-        router.push('/'); // Navigate to main page
+        router.push('/redirect'); // Navigate to main page
       } else {
         setIsLoading(false);
         setErrorMessage(result.message || 
