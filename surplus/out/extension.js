@@ -49,30 +49,27 @@ const adminFunctions_1 = __importDefault(require("./firebase/adminFunctions"));
 let statusBar;
 let notificationManager;
 // This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 async function activate(context) {
     // Initialize components
     statusBar = new statusBar_1.SurplusStatusBar();
     notificationManager = new notifications_1.SurplusNotificationManager(context);
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
     console.log('Congratulations, your extension "surplus" is now active!');
     // Register the webview provider
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(DashboardViewProvider_1.DashboardViewProvider.viewType, new DashboardViewProvider_1.DashboardViewProvider(context.extensionUri)));
     // Add URI handler registration
     context.subscriptions.push(vscode.window.registerUriHandler({
         handleUri(uri) {
-            console.log('Received URI:', uri.toString());
-            const queryParams = new URLSearchParams(uri.query);
-            const token = queryParams.get('token');
-            if (token) {
-                console.log('Received token from URI handler');
-                handleTokenAuthentication(decodeURIComponent(token));
+            if (uri.path === '/surplus') {
+                const queryParams = new URLSearchParams(uri.query);
+                const token = queryParams.get('token');
+                if (token) {
+                    handleTokenAuthentication(token);
+                }
+                else {
+                    vscode.window.showErrorMessage('No authentication token provided');
+                }
             }
-            else {
-                vscode.window.showErrorMessage('No authentication token provided');
-            }
-        }
+        },
     }));
     // Register commands
     let disposables = [
@@ -80,7 +77,7 @@ async function activate(context) {
         vscode.commands.registerCommand('surplus.logout', () => handleLogout()),
         vscode.commands.registerCommand('surplus.addTask', () => handleAddTask()),
         vscode.commands.registerCommand('surplus.addExpense', () => handleAddExpense()),
-        vscode.commands.registerCommand('surplus.viewDashboard', () => handleViewDashboard())
+        vscode.commands.registerCommand('surplus.viewDashboard', () => handleViewDashboard()),
     ];
     context.subscriptions.push(...disposables);
     // Initialize status bar
@@ -90,11 +87,11 @@ async function handleLogin() {
     try {
         const email = await vscode.window.showInputBox({
             prompt: 'Enter your email',
-            placeHolder: 'email@example.com'
+            placeHolder: 'email@example.com',
         });
         const password = await vscode.window.showInputBox({
             prompt: 'Enter your password',
-            password: true
+            password: true,
         });
         if (email && password) {
             // Implement actual login logic here
@@ -121,17 +118,17 @@ async function handleLogout() {
 async function handleAddTask() {
     const title = await vscode.window.showInputBox({
         prompt: 'Enter task title',
-        placeHolder: 'Pay rent'
+        placeHolder: 'Pay rent',
     });
     const dueDate = await vscode.window.showInputBox({
         prompt: 'Enter due date (YYYY-MM-DD)',
-        placeHolder: '2024-03-01'
+        placeHolder: '2024-03-01',
     });
     if (title && dueDate) {
         notificationManager.addTask({
             title,
             dueDate: new Date(dueDate),
-            completed: false
+            completed: false,
         });
         vscode.window.showInformationMessage(`Task "${title}" added successfully!`);
     }
@@ -140,11 +137,11 @@ async function handleAddExpense() {
     try {
         const description = await vscode.window.showInputBox({
             prompt: 'Enter expense description',
-            placeHolder: 'Groceries'
+            placeHolder: 'Groceries',
         });
         const amount = await vscode.window.showInputBox({
             prompt: 'Enter amount',
-            placeHolder: '50.00'
+            placeHolder: '50.00',
         });
         if (description && amount) {
             vscode.window.showInformationMessage(`Expense "${description}" added successfully!`);
