@@ -101,6 +101,41 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         font-style: italic;
                         padding: 8px 0;
                     }
+                     #finances-container {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 12px;
+                        padding: 8px 0;
+                    }
+                    .finance-card {
+                        background: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 4px;
+                        padding: 12px;
+                    }
+                    .finance-title {
+                        color: var(--vscode-foreground);
+                        font-weight: bold;
+                        margin-bottom: 8px;
+                    }
+                    .finance-amount {
+                        font-size: 1.4em;
+                        margin: 8px 0;
+                        color: var(--vscode-foreground);
+                    }
+                    .finance-amount.positive {
+                        color: var(--vscode-charts-green);
+                    }
+                    .finance-amount.negative {
+                        color: var(--vscode-charts-red);
+                    }
+                    .finance-details {
+                        font-size: 0.9em;
+                        color: var(--vscode-descriptionForeground);
+                    }
+                    .finance-details div {
+                        margin: 4px 0;
+                    }
                     #stock-container {
                         display: grid;
                         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -113,7 +148,6 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         border: 1px solid var(--vscode-widget-border);
                         border-radius: 4px;
                         padding: 12px;
-                        padding-bottom:40px;
                         transition: transform 0.2s;
                         height:125px;
                         margin-bottom: 20px;
@@ -235,55 +269,25 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                             <div class="finance-card">
                                 <div class="finance-title">Current Balance</div>
                                 <div class="finance-amount">$10,000.00</div>
-                                <div class="finance-details">
-                                    <div>
-                                        <span>Last Updated:</span>
-                                        <span>${new Date().toLocaleDateString()}</span>
-                                    </div>
-                                </div>
                             </div>
                             <div class="finance-card">
                                 <div class="finance-title">Monthly Income</div>
                                 <div class="finance-amount positive">$5,000.00</div>
                                 <div class="finance-details">
-                                    <div>
-                                        <span>Salary:</span>
-                                        <span>$4,500.00</span>
-                                    </div>
-                                    <div>
-                                        <span>Investments:</span>
-                                        <span>$300.00</span>
-                                    </div>
-                                    <div>
-                                        <span>Other:</span>
-                                        <span>$200.00</span>
-                                    </div>
+                                    <div>Salary: $4,500.00</div>
+                                    <div>Other: $500.00</div>
                                 </div>
                             </div>
                             <div class="finance-card">
                                 <div class="finance-title">Monthly Expenses</div>
                                 <div class="finance-amount negative">$3,000.00</div>
                                 <div class="finance-details">
-                                    <div>
-                                        <span>Housing:</span>
-                                        <span>$1,500.00</span>
-                                    </div>
-                                    <div>
-                                        <span>Utilities:</span>
-                                        <span>$300.00</span>
-                                    </div>
-                                    <div>
-                                        <span>Food:</span>
-                                        <span>$600.00</span>
-                                    </div>
-                                    <div>
-                                        <span>Transportation:</span>
-                                        <span>$400.00</span>
-                                    </div>
-                                    <div>
-                                        <span>Other:</span>
-                                        <span>$200.00</span>
-                                    </div>
+                                    <div>Housing: $1,500.00</div>
+                                    <div>Utilities: $300.00</div>
+                                    <div>Food: $600.00</div>
+                                    <div>Other: $600.00</div>
+                                    <div></div>
+                                    <div>Due: 10/31/2021</div>
                                 </div>
                             </div>
                         </div>
@@ -304,30 +308,19 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
 
                 <div class="accordion">
                     <div class="accordion-header">
-                        <span>Budgeting</span>
-                        <span class="accordion-icon">▶</span>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="empty-state">No budget items added yet</div>
-                    </div>
-                </div>
-
-                <div class="accordion">
-                    <div class="accordion-header">
                         <span>Goals</span>
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        ${goals.length ? goals.map(goal => `
+                        
                             <div class="goal-card">
-                                <div class="goal-title">${goal.title}</div>
-                                <div class="goal-amount">$${goal.currentAmount.toFixed(2)} / $${goal.targetAmount.toFixed(2)}</div>
+                                <div class="goal-title">Rent</div>
+                                <div class="goal-amount">$1000</div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${(goal.currentAmount / goal.targetAmount * 100)}%"></div>
+                                    <div class="progress-fill" style="width:0}%"></div>
                                 </div>
-                                <div class="goal-deadline">Deadline: ${goal.deadline}</div>
+                                <div class="goal-deadline">Deadline: 2025-02-01</div>
                             </div>
-                        `).join('') : '<div class="empty-state">No financial goals set yet</div>'}
                     </div>
                 </div>
 
@@ -337,18 +330,16 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        ${expenses.length ? expenses.map(expense => `
                             <div class="expense-card">
                                 <div class="expense-header">
-                                    <div class="expense-description">${expense.description}</div>
-                                    <div class="expense-amount">-$${expense.amount.toFixed(2)}</div>
+                                    <div class="expense-description">Groceries</div>
+                                    <div class="expense-amount">-$120.45</div>
                                 </div>
                                 <div class="expense-details">
-                                    <div class="expense-date">${expense.date}</div>
-                                    <div class="category-tag">${expense.category || 'Other'}</div>
+                                    <div class="expense-date">2025-01-26</div>
+                                    <div class="category-tag">Food and Drink</div>
                                 </div>
                             </div>
-                        `).join('') : '<div class="empty-state">No expenses tracked yet</div>'}
                     </div>
                 </div>
 
