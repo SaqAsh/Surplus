@@ -12,7 +12,7 @@ export class SurplusWebviewProvider implements vscode.WebviewViewProvider {
             <!DOCTYPE html>
             <html>
                 <body>
-                    <h1>Pronab Dashboard</h1>
+                    <h1>Surplus Dashboard</h1>
                     <p>Welcome to your financial dashboard!</p>
                 </body>
             </html>

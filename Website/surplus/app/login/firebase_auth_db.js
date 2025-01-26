@@ -30,19 +30,25 @@ onAuthStateChanged(auth, user => {
   }
 })
 
-export function login(loginEmail, loginPassword) {
-  // Login using email/password
+export function login(email, password){
+  // Create new account using email/password
   const loginEmailPassword = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, loginEmail, loginPassword)
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      // Log the user information
       console.log(userCredential.user)
-      return { success: true, user: userCredential.user };
-    }
-    catch(error) {
-      console.log(`There was an error: ${error}`)
+      return { success: true, 
+        user: userCredential.user 
+      };
+    } catch (error) {
+      console.error('There was an error:', error);
+      return {
+          success: false,
+          error: error.message
+      };
     }
   }
-  loginEmailPassword()
+  return loginEmailPassword()
 }
 
 
@@ -64,7 +70,11 @@ export function login(loginEmail, loginPassword) {
 //   })
 // }
 
-// Log out
-const logout = async () => {
-  await signOut(auth);
+// Log out (not used yet)
+export function logOut() {
+  const logout = async () => {
+    await signOut(auth);
+    return { success: true }
+  }
+  return logout()
 }

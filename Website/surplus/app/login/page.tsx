@@ -14,6 +14,7 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const router = useRouter()
 
@@ -21,11 +22,32 @@ export default function Login() {
     event.preventDefault()
     setIsLoading(true)
 
-    // Simulate login - replace with actual login logic
-    // setTimeout(() => {
-    //   router.push("/redirect")
-    // }, 1000)
-    login(username, password)
+    try {
+      const result = await login(username, password);
+      if (result.success) {
+        // Successful login
+        setIsLoading(false);
+        router.push('/'); // Navigate to main page
+      } else {
+        setIsLoading(false);
+        // Handle error case if needed
+      }
+    } catch (error) {
+      setIsLoading(false);
+
+      // const wrongPasswordError = 'AuthErrorCodes.invalidpassword';
+
+      // if (error.message === wrongPasswordError) {
+      //   console.error('User tried to login with wrong password');
+      //   setErrorMessage('Invalid password. Please try again.');
+      //   // Handle the specific error case
+      // } else {
+      //   console.error('Error during login:', error);
+      //   // Handle other errors
+      // }
+
+      console.error('Error during login:', error);
+    }
   }
 
   return (
@@ -63,6 +85,11 @@ export default function Login() {
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
+              {errorMessage && ( // Render Error Message if one is provided. Otherwise, render nothing
+                <div className="space-y-2">
+                    {errorMessage}
+                </div>
+              )}
               <p className="text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
                 <Link href="/signup" className="text-primary hover:underline">
