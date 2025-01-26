@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
+import { SurplusAuthProvider } from '../auth';
 
 export class DashboardViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'surplus.dashboardView';
+    private _view?: vscode.WebviewView;
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
@@ -12,6 +14,7 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
         context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken,
     ) {
+        this._view = webviewView;
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [this._extensionUri]
@@ -21,6 +24,10 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
+        const authProvider = SurplusAuthProvider.getInstance();
+        const user = authProvider.getCurrentUser();
+        const welcomeMessage = user ? `Welcome, ${user.email || user.displayName || 'User'}!` : 'Welcome to Surplus!';
+
         return `
             <!DOCTYPE html>
             <html lang="en">
@@ -121,11 +128,16 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         height: 120px;
                         width: 100%;
                     }
-
-
+                    .welcome-message {
+                        font-size: 1.2em;
+                        margin: 16px 0;
+                        color: var(--vscode-foreground);
+                        font-weight: bold;
+                    }
                 </style>
             </head>
             <body>
+                <div class="welcome-message">${welcomeMessage}</div>
                 <div class="accordion">
                     <div class="accordion-header">
                         <span>Finances</span>
@@ -290,5 +302,11 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
             </body>
             </html>
         `;
+    }
+
+    public updateDashboard() {
+        if (this._view) {
+            this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+        }
     }
 } 

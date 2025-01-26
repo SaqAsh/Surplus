@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { DashboardViewProvider } from './webview/DashboardViewProvider';
 
 export class SurplusAuthProvider {
     private static instance: SurplusAuthProvider;
