@@ -22,6 +22,7 @@ class DashboardViewProvider {
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Surplus Dashboard</title>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
                 <style>
                     body {
                         padding: 10px;
@@ -69,13 +70,17 @@ class DashboardViewProvider {
                         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                         gap: 12px;
                         padding: 8px 0;
+                        
                     }
                     .stock-card {
                         background: var(--vscode-editor-background);
                         border: 1px solid var(--vscode-widget-border);
                         border-radius: 4px;
                         padding: 12px;
+                        padding-bottom:40px;
                         transition: transform 0.2s;
+                        height:125px;
+                        margin-bottom: 20px;
                     }
                     .stock-card:hover {
                         transform: translateY(-2px);
@@ -96,6 +101,22 @@ class DashboardViewProvider {
                     .stock-change.negative {
                         color: var(--vscode-charts-red);
                     }
+                    .chart-container {
+                        width: 100%;
+                        height: 300px;
+                        margin-top: 20px;
+                        padding: 10px;
+                        background: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 4px;
+                    }
+                    .stock-chart {
+                        margin-top: 5px;
+                        height: 120px;
+                        width: 100%;
+                    }
+
+
                 </style>
             </head>
             <body>
@@ -118,6 +139,7 @@ class DashboardViewProvider {
                         <div id="stock-container">
                             <!-- Stock cards will be dynamically inserted here -->
                         </div>
+               
                     </div>
                 </div>
 
@@ -152,18 +174,63 @@ class DashboardViewProvider {
                     });
 
                     const FINNHUB_API_KEY = 'cuaoichr01qof06j1sl0cuaoichr01qof06j1slg';
-                    const STOCK_SYMBOLS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA'];
+                    const STOCK_SYMBOLS = ['AAPL', 'TM', 'GOOGL', 'AMZN', 'ORCL', 'TMUS'];
+
+                    async function createChart(symbol, data) {
+                        const ctx = document.getElementById(\`chart-\${symbol}\`);
+
+                        // Calculate min and max with 5% padding
+                        const values = [data.o, data.c, data.h, data.l];
+                        const min = Math.min(...values);
+                        const max = Math.max(...values);
+                        const padding = (max - min) * 0.3;
+                        
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Open', 'Current', 'High', 'Low'],
+                                datasets: [{
+                                    label: symbol,
+                                    data: values,
+                                    backgroundColor: [
+                                        '#8794D4',  // Open - darker pastel blue
+                                        data.d > 0 ? '#8FB3A0' : '#D48787',  // Current - darker pastel green if up, darker pastel pink if down
+                                        '#B187D4',  // High - darker pastel purple
+                                        '#D487B1'   // Low - darker pastel pink
+                                    ],
+                                    borderWidth: 1,
+                                    borderRadius: 4
+                                }]
+                            },
+
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                },
+                                scales: {
+                                     y: {
+                                        min: min - padding,
+                                        max: max + padding,
+                                        ticks: {
+                                            stepSize: 1,
+                                            callback: value => '$' + value.toFixed(2)
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
 
                     async function updateStockPrice() {
                         const stockContainer = document.getElementById('stock-container');
-                        stockContainer.innerHTML = STOCK_SYMBOLS.map(symbol => \`
-                            <div class="stock-card" id="stock-\${symbol}">
-                                <div class="stock-symbol">\${symbol}</div>
-                                <div class="stock-price">Loading...</div>
-                                <div class="stock-change">--</div>
-                            </div>
-                        \`).join('');
-
+                        // Clear existing content first
+                        stockContainer.innerHTML = '';
+                        
+                        // Only loop through our defined STOCK_SYMBOLS
                         for (const symbol of STOCK_SYMBOLS) {
                             try {
                                 const response = await fetch(
@@ -171,26 +238,48 @@ class DashboardViewProvider {
                                 );
                                 const data = await response.json();
                                 
-                                const container = document.getElementById(\`stock-\${symbol}\`);
-                                container.innerHTML = \`
+                                // Create a new div for each stock
+                                const stockDiv = document.createElement('div');
+                                stockDiv.className = 'stock-card';
+                                stockDiv.id = \`stock-\${symbol}\`;
+                                stockDiv.innerHTML = \`
                                     <div class="stock-symbol">\${symbol}</div>
                                     <div class="stock-price">$\${data.c.toFixed(2)}</div>
                                     <div class="stock-change \${data.d > 0 ? 'positive' : 'negative'}">
                                         \${data.d > 0 ? '▲' : '▼'} $\${Math.abs(data.d).toFixed(2)} (\${data.dp.toFixed(2)}%)
                                     </div>
+                                    <canvas class="stock-chart" id="chart-\${symbol}"></canvas>
                                 \`;
+                                
+                                stockContainer.appendChild(stockDiv);
+                                await createChart(symbol, data);
                             } catch (error) {
-                                const container = document.getElementById(\`stock-\${symbol}\`);
-                                container.innerHTML = \`
-                                    <div class="stock-symbol">\${symbol}</div>
-                                    <div class="stock-price">Failed to load stock data</div>
-                                \`;
+                                console.error(\`Error fetching data for \${symbol}:\`, error);
                             }
                         }
                     }
 
                     // Immediately call updateStockPrice when the page loads
                     updateStockPrice();
+                    
+                    // Calculate time until next update (next day at market open - 9:30 AM EST)
+                    function scheduleNextUpdate() {
+                        const now = new Date();
+                        const nextUpdate = new Date(now);
+                        nextUpdate.setHours(9, 30, 0, 0); // 9:30 AM
+                        
+                        if (now >= nextUpdate) {
+                            nextUpdate.setDate(nextUpdate.getDate() + 1); // Move to next day
+                        }
+                        
+                        const timeUntilUpdate = nextUpdate.getTime() - now.getTime();
+                        setTimeout(() => {
+                            updateStockPrice();
+                            scheduleNextUpdate(); // Schedule next update
+                        }, timeUntilUpdate);
+                    }
+                    
+                    scheduleNextUpdate();
                 </script>
             </body>
             </html>
