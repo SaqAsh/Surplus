@@ -25,10 +25,6 @@ After installation, you can start using Surplus by following these steps:
 2. Navigate to the **Surplus** extension (you can find it in the sidebar).
 3. Use the features for task management, expense tracking, and investment monitoring directly from the VS Code interface.
 
-## Screenshots
-
-Add relevant screenshots of your project here, showing the main features.
-
 ## Contributing
 
 We welcome contributions to Surplus! If you'd like to contribute, please fork the repository and submit a pull request.
