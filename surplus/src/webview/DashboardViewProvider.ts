@@ -70,6 +70,22 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         font-style: italic;
                         padding: 8px 0;
                     }
+                    #stock-container {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 12px;
+                        padding: 8px 0;
+                    }
+                    .stock-card {
+                        background: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 4px;
+                        padding: 12px;
+                        transition: transform 0.2s;
+                    }
+                    .stock-card:hover {
+                        transform: translateY(-2px);
+                    }
                 </style>
             </head>
             <body>
@@ -89,7 +105,9 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        <div class="empty-state">No investments tracked yet</div>
+                        <div id="stock-container">
+                            <!-- Stock cards will be dynamically inserted here -->
+                        </div>
                     </div>
                 </div>
 
@@ -122,6 +140,47 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                             accordion.classList.toggle('active');
                         });
                     });
+
+                    const FINNHUB_API_KEY = 'cuaoichr01qof06j1sl0cuaoichr01qof06j1slg';
+                    const STOCK_SYMBOLS = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA'];
+
+                    async function updateStockPrice() {
+                        const stockContainer = document.getElementById('stock-container');
+                        stockContainer.innerHTML = STOCK_SYMBOLS.map(symbol => \`
+                            <div class="stock-card" id="stock-\${symbol}">
+                                <div class="stock-symbol">\${symbol}</div>
+                                <div class="stock-price">Loading...</div>
+                                <div class="stock-change">--</div>
+                            </div>
+                        \`).join('');
+
+                        for (const symbol of STOCK_SYMBOLS) {
+                            try {
+                                const response = await fetch(
+                                    \`https://finnhub.io/api/v1/quote?symbol=\${symbol}&token=\${FINNHUB_API_KEY}\`
+                                );
+                                const data = await response.json();
+                                
+                                const container = document.getElementById(\`stock-\${symbol}\`);
+                                container.innerHTML = \`
+                                    <div class="stock-symbol">\${symbol}</div>
+                                    <div class="stock-price">$\${data.c.toFixed(2)}</div>
+                                    <div class="stock-change \${data.d > 0 ? 'positive' : 'negative'}">
+                                        \${data.d > 0 ? '▲' : '▼'} $\${Math.abs(data.d).toFixed(2)} (\${data.dp.toFixed(2)}%)
+                                    </div>
+                                \`;
+                            } catch (error) {
+                                const container = document.getElementById(\`stock-\${symbol}\`);
+                                container.innerHTML = \`
+                                    <div class="stock-symbol">\${symbol}</div>
+                                    <div class="stock-price">Failed to load stock data</div>
+                                \`;
+                            }
+                        }
+                    }
+
+                    // Immediately call updateStockPrice when the page loads
+                    updateStockPrice();
                 </script>
             </body>
             </html>
