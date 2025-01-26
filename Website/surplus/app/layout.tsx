@@ -1,6 +1,7 @@
 import { ThemeProvider } from "@/components/theme-provider"
 import { fontPoppins } from "@/lib/fonts"
 import "./globals.css"
+import { AuthProvider } from "./contexts/AuthContext"
 
 export const metadata = {
   title: "Surplus - TypeScript VSCode Extension",
@@ -15,9 +16,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${fontPoppins.variable} font-sans antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {children}
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   )
