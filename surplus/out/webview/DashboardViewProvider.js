@@ -339,7 +339,7 @@ class DashboardViewProvider {
                     });
 
                     const FINNHUB_API_KEY = 'cuaoichr01qof06j1sl0cuaoichr01qof06j1slg';
-                    const STOCK_SYMBOLS = ${JSON.stringify(stockSymbols)};
+                    const STOCK_SYMBOLS = [${JSON.stringify(stockSymbols)}];
 
                     async function updateStockPrice() {
                         const stockContainer = document.getElementById('stock-container');
