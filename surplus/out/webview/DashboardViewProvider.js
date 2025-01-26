@@ -2,20 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardViewProvider = void 0;
 class DashboardViewProvider {
-  _extensionUri;
-  static viewType = "surplus.dashboardView";
-  constructor(_extensionUri) {
-    this._extensionUri = _extensionUri;
-  }
-  resolveWebviewView(webviewView, context, _token) {
-    webviewView.webview.options = {
-      enableScripts: true,
-      localResourceRoots: [this._extensionUri],
-    };
-    webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-  }
-  _getHtmlForWebview(webview) {
-    return `
+    _extensionUri;
+    static viewType = 'surplus.dashboardView';
+    constructor(_extensionUri) {
+        this._extensionUri = _extensionUri;
+    }
+    resolveWebviewView(webviewView, context, _token) {
+        webviewView.webview.options = {
+            enableScripts: true,
+            localResourceRoots: [this._extensionUri]
+        };
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+    }
+    _getHtmlForWebview(webview) {
+        return `
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -96,41 +96,6 @@ class DashboardViewProvider {
                     .stock-change.negative {
                         color: var(--vscode-charts-red);
                     }
-                    #finances-container {
-                        display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                        gap: 12px;
-                        padding: 8px 0;
-                    }
-                    .finance-card {
-                        background: var(--vscode-editor-background);
-                        border: 1px solid var(--vscode-widget-border);
-                        border-radius: 4px;
-                        padding: 12px;
-                    }
-                    .finance-title {
-                        color: var(--vscode-foreground);
-                        font-weight: bold;
-                        margin-bottom: 8px;
-                    }
-                    .finance-amount {
-                        font-size: 1.4em;
-                        margin: 8px 0;
-                        color: var(--vscode-foreground);
-                    }
-                    .finance-amount.positive {
-                        color: var(--vscode-charts-green);
-                    }
-                    .finance-amount.negative {
-                        color: var(--vscode-charts-red);
-                    }
-                    .finance-details {
-                        font-size: 0.9em;
-                        color: var(--vscode-descriptionForeground);
-                    }
-                    .finance-details div {
-                        margin: 4px 0;
-                    }
                 </style>
             </head>
             <body>
@@ -140,30 +105,7 @@ class DashboardViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        <div id="finances-container">
-                            <div class="finance-card"> 
-                                <div class="finance-title">Current Balance</div>
-                                <div class="finance-amount">$10,000.00</div>
-                            </div>
-                            <div class="finance-card">
-                                <div class="finance-title">Monthly Income</div>
-                                <div class="finance-amount positive">$5,000.00</div>
-                                <div class="finance-details">
-                                    <div>Salary: $4,500.00</div>
-                                    <div>Other: $500.00</div>
-                                </div>
-                            </div>
-                            <div class="finance-card">
-                                <div class="finance-title">Monthly Expenses</div>
-                                <div class="finance-amount negative">$3,000.00</div>
-                                <div class="finance-details">
-                                    <div>Housing: $1,500.00</div>
-                                    <div>Utilities: $300.00</div>
-                                    <div>Food: $600.00</div>
-                                    <div>Other: $600.00</div>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="empty-state">No financial data tracked yet</div>
                     </div>
                 </div>
 
@@ -253,7 +195,7 @@ class DashboardViewProvider {
             </body>
             </html>
         `;
-  }
+    }
 }
 exports.DashboardViewProvider = DashboardViewProvider;
 //# sourceMappingURL=DashboardViewProvider.js.map
