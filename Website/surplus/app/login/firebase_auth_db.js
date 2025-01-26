@@ -1,8 +1,11 @@
 // Import the functions you need from the SDKs you need
-import { create } from "domain";
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
-  GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged, signInWithEmailAndPassword,
+  signInWithPopup, GithubAuthProvider
+} from "firebase/auth";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -90,7 +93,7 @@ export function signInWithGooglePopup() {
         user: null,        // Add this to maintain consistent return type
         errorMessage: errorMessage
       };
-    });
+  });
 }
 
 const providerGithub = new GithubAuthProvider();

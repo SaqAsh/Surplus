@@ -1,20 +1,19 @@
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getDatabase, ref, set, onValue } from "firebase/database";
+import { getDatabase, onValue, ref, set } from "firebase/database";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBZHavEWbWJikh20WOZMLkWs2beoz_TPzE",
-    authDomain: "surplus-aed79.firebaseapp.com",
-    databaseURL: "https://surplus-aed79-default-rtdb.firebaseio.com",
-    projectId: "surplus-aed79",
-    storageBucket: "surplus-aed79.firebasestorage.app",
-    messagingSenderId: "992402453671",
-    appId: "1:992402453671:web:0e9b0a92bc9ce7167c5782",
-    measurementId: "G-3KJHKHQJXW"
-};
+// const firebaseConfig = {
+//     apiKey: "AIzaSyBZHavEWbWJikh20WOZMLkWs2beoz_TPzE",
+//     authDomain: "surplus-aed79.firebaseapp.com",
+//     databaseURL: "https://surplus-aed79-default-rtdb.firebaseio.com",
+//     projectId: "surplus-aed79",
+//     storageBucket: "surplus-aed79.firebasestorage.app",
+//     messagingSenderId: "992402453671",
+//     appId: "1:992402453671:web:0e9b0a92bc9ce7167c5782",
+//     measurementId: "G-3KJHKHQJXW"
+// };
 
-const app = !getApps().length
-  ? initializeApp(firebaseConfig)
-  : getApp();
+// const app = !getApps().length
+//   ? initializeApp(firebaseConfig)
+//   : getApp();
 
 let username = "test";
 
