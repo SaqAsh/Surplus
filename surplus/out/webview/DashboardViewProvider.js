@@ -298,16 +298,15 @@ class DashboardViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        ${goals.length ? goals.map(goal => `
+                        
                             <div class="goal-card">
-                                <div class="goal-title">${goal.title}</div>
-                                <div class="goal-amount">$${goal.currentAmount.toFixed(2)} / $${goal.targetAmount.toFixed(2)}</div>
+                                <div class="goal-title">Rent</div>
+                                <div class="goal-amount">$1000</div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${(goal.currentAmount / goal.targetAmount * 100)}%"></div>
+                                    <div class="progress-fill" style="width:0}%"></div>
                                 </div>
-                                <div class="goal-deadline">Deadline: ${goal.deadline}</div>
+                                <div class="goal-deadline">Deadline: 2025-02-01</div>
                             </div>
-                        `).join('') : '<div class="empty-state">No financial goals set yet</div>'}
                     </div>
                 </div>
 
@@ -317,18 +316,16 @@ class DashboardViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        ${expenses.length ? expenses.map(expense => `
                             <div class="expense-card">
                                 <div class="expense-header">
-                                    <div class="expense-description">${expense.description}</div>
-                                    <div class="expense-amount">-$${expense.amount.toFixed(2)}</div>
+                                    <div class="expense-description">Groceries</div>
+                                    <div class="expense-amount">-$120.45</div>
                                 </div>
                                 <div class="expense-details">
-                                    <div class="expense-date">${expense.date}</div>
-                                    <div class="category-tag">${expense.category || 'Other'}</div>
+                                    <div class="expense-date">2025-01-26</div>
+                                    <div class="category-tag">Food and Drink</div>
                                 </div>
                             </div>
-                        `).join('') : '<div class="empty-state">No expenses tracked yet</div>'}
                     </div>
                 </div>
 
