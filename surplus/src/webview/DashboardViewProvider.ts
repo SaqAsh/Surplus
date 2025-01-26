@@ -86,6 +86,22 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                     .stock-card:hover {
                         transform: translateY(-2px);
                     }
+                    .stock-symbol {
+                        color: var(--vscode-symbolIcon-variableForeground);
+                        font-weight: bold;
+                        font-size: 1.1em;
+                    }
+                    .stock-price {
+                        color: var(--vscode-charts-blue);
+                        font-size: 1.2em;
+                        margin: 4px 0;
+                    }
+                    .stock-change.positive {
+                        color: var(--vscode-charts-green);
+                    }
+                    .stock-change.negative {
+                        color: var(--vscode-charts-red);
+                    }
                 </style>
             </head>
             <body>
