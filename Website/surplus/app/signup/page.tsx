@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { signup } from './firebase_auth_db';
+import { signInWithGooglePopup } from '../login/firebase_auth_db';
 import { changeUsername } from '../firebase_database';
 
 export default function SignUp() {
@@ -78,6 +79,21 @@ export default function SignUp() {
               </div>
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? "Creating account..." : "Create account"}
+              </Button>
+              <Button className="w-full mt-2" variant="outline" onClick={async () => {
+                try {
+                  const result = await signInWithGooglePopup();
+                  if (result.success) {
+                    router.push('/');
+                  } else {
+                    console.error(result.errorMessage || 'An error occurred during Google login');
+                  }
+                } catch (error) {
+
+                  console.error('Error during Google login:', error);
+                }
+              }}>
+                Sign up with Google
               </Button>
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}
