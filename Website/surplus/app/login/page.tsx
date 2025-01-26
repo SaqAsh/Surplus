@@ -9,6 +9,7 @@ import Link from "next/link"
 import { login } from './firebase_auth_db';
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { setUsername } from '../firebase_database';
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,26 +27,17 @@ export default function Login() {
       const result = await login(username, password);
       if (result.success) {
         // Successful login
+        setUsername(username);
         setIsLoading(false);
         router.push('/'); // Navigate to main page
       } else {
         setIsLoading(false);
-        // Handle error case if needed
+        setErrorMessage(result.message || 
+          'An error occurred during login. Please try again.');
       }
     } catch (error) {
       setIsLoading(false);
-
-      // const wrongPasswordError = 'AuthErrorCodes.invalidpassword';
-
-      // if (error.message === wrongPasswordError) {
-      //   console.error('User tried to login with wrong password');
-      //   setErrorMessage('Invalid password. Please try again.');
-      //   // Handle the specific error case
-      // } else {
-      //   console.error('Error during login:', error);
-      //   // Handle other errors
-      // }
-
+      setErrorMessage('An error occurred during login. Please try again.');
       console.error('Error during login:', error);
     }
   }

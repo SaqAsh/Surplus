@@ -42,10 +42,21 @@ export function login(email, password){
       };
     } catch (error) {
       console.error('There was an error:', error);
-      return {
+
+      if (error.code === 'auth/invalid-credential') {
+        return {
           success: false,
-          error: error.message
-      };
+          error: error.code,
+          message: 'Invalid email or password. Please check your credentials and try again.'
+        };
+      } else {
+        return {
+          success: false,
+          errorCode: error.code,
+          errorMessage: error.message,  // Return the full error message
+          fullError: error  // Return the complete error object if needed
+        };
+      }
     }
   }
   return loginEmailPassword()
