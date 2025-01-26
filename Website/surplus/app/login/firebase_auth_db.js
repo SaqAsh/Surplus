@@ -1,8 +1,11 @@
 // Import the functions you need from the SDKs you need
-import { create } from "domain";
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
-  GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged, signInWithEmailAndPassword,
+  signInWithPopup
+} from "firebase/auth";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -72,8 +75,8 @@ export function signInWithGooglePopup() {
   return signInWithPopup(auth, provider)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
+      // const credential = GoogleAuthProvider.credentialFromResult(result);
+      // const token = credential.accessToken;
       // The signed-in user info.
       const user = result.user;
       return { 
@@ -83,7 +86,7 @@ export function signInWithGooglePopup() {
       };
     }).catch((error) => {
       // Handle Errors here.
-      const errorCode = error.code;
+      // const errorCode = error.code;
       const errorMessage = error.message;
       return {
         success: false,
