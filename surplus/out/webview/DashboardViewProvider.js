@@ -127,17 +127,115 @@ class DashboardViewProvider {
                         color: var(--vscode-foreground);
                         font-weight: bold;
                     }
+                    #finances-container {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 12px;
+                        padding: 8px 0;
+                    }
+                    .finance-card {
+                        background: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 4px;
+                        padding: 12px;
+                        transition: transform 0.2s;
+                    }
+                    .finance-card:hover {
+                        transform: translateY(-2px);
+                    }
+                    .finance-title {
+                        color: var(--vscode-foreground);
+                        font-weight: bold;
+                        margin-bottom: 8px;
+                    }
+                    .finance-amount {
+                        font-size: 1.4em;
+                        margin: 8px 0;
+                        color: var(--vscode-foreground);
+                    }
+                    .finance-amount.positive {
+                        color: var(--vscode-charts-green);
+                    }
+                    .finance-amount.negative {
+                        color: var(--vscode-charts-red);
+                    }
+                    .finance-details {
+                        font-size: 0.9em;
+                        color: var(--vscode-descriptionForeground);
+                        margin-top: 8px;
+                    }
+                    .finance-details div {
+                        margin: 4px 0;
+                        display: flex;
+                        justify-content: space-between;
+                    }
                 </style>
             </head>
             <body>
                 <div class="welcome-message">${welcomeMessage}</div>
+                
                 <div class="accordion">
                     <div class="accordion-header">
                         <span>Finances</span>
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        <div class="empty-state">No financial data tracked yet</div>
+                        <div id="finances-container">
+                            <div class="finance-card">
+                                <div class="finance-title">Current Balance</div>
+                                <div class="finance-amount">$10,000.00</div>
+                                <div class="finance-details">
+                                    <div>
+                                        <span>Last Updated:</span>
+                                        <span>${new Date().toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="finance-card">
+                                <div class="finance-title">Monthly Income</div>
+                                <div class="finance-amount positive">$5,000.00</div>
+                                <div class="finance-details">
+                                    <div>
+                                        <span>Salary:</span>
+                                        <span>$4,500.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Investments:</span>
+                                        <span>$300.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Other:</span>
+                                        <span>$200.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="finance-card">
+                                <div class="finance-title">Monthly Expenses</div>
+                                <div class="finance-amount negative">$3,000.00</div>
+                                <div class="finance-details">
+                                    <div>
+                                        <span>Housing:</span>
+                                        <span>$1,500.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Utilities:</span>
+                                        <span>$300.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Food:</span>
+                                        <span>$600.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Transportation:</span>
+                                        <span>$400.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Other:</span>
+                                        <span>$200.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
