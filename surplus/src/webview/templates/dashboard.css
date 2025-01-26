@@ -1,0 +1,73 @@
+body {
+    padding: 10px;
+    color: var(--vscode-foreground);
+    font-family: var(--vscode-font-family);
+}
+.accordion {
+    border: 1px solid var(--vscode-widget-border);
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+.accordion-header {
+    background: var(--vscode-editor-background);
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+.accordion-header:hover {
+    background: var(--vscode-list-hoverBackground);
+}
+.accordion-content {
+    padding: 10px;
+    display: none;
+    border-top: 1px solid var(--vscode-widget-border);
+}
+.accordion.active .accordion-content {
+    display: block;
+}
+.accordion-icon {
+    transition: transform 0.3s ease;
+}
+.accordion.active .accordion-icon {
+    transform: rotate(90deg);
+}
+.empty-state {
+    color: var(--vscode-descriptionForeground);
+    font-style: italic;
+    padding: 8px 0;
+}
+#stock-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    padding: 8px 0;
+}
+.stock-card {
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-widget-border);
+    border-radius: 4px;
+    padding: 12px;
+    transition: transform 0.2s;
+}
+.stock-card:hover {
+    transform: translateY(-2px);
+}
+.stock-symbol {
+    color: var(--vscode-symbolIcon-variableForeground);
+    font-weight: bold;
+    font-size: 1.1em;
+}
+.stock-price {
+    color: var(--vscode-charts-blue);
+    font-size: 1.2em;
+    margin: 4px 0;
+}
+.stock-change.positive {
+    color: var(--vscode-charts-green);
+}
+.stock-change.negative {
+    color: var(--vscode-charts-red);
+}
