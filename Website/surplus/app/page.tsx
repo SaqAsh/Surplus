@@ -4,6 +4,7 @@ import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { ChartNoAxesCombined, NotebookTabs, Wallet } from "lucide-react"
 import Link from "next/link"
+import { writeUserData, writeEmail } from "./firebase_database";
 
 export default function Home() {
   return (
@@ -26,6 +27,18 @@ export default function Home() {
               <Button asChild size="lg" variant="outline">
                 <Link href="/signup">Create Account</Link>
               </Button>
+              {/* <Button asChild size="lg" variant="outline" onClick={() => {
+                const email = writeUserData("test@test.com", "1000", "1000", "1000", "1000", "1000"); //Test email
+                console.log(email);
+              }}>
+                <h1>Write User Data</h1>
+              </Button>
+              <Button asChild size="lg" variant="outline" onClick={() => {
+                const email = writeEmail("test@test.com"); //Test email
+                console.log(email);
+              }}>
+                <h1>Write Email</h1>
+              </Button> */}
             </div>
           </div>
         </section>
