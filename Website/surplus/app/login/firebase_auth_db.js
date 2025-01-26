@@ -1,8 +1,9 @@
 // Import the functions you need from the SDKs you need
 import { create } from "domain";
-import { initializeApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
-// TODO: Add SDKs for Firebase products that you want to use
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
+  GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
@@ -18,7 +19,10 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
+const firebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
+
 const auth = getAuth(firebaseApp);
 
 // Detect auth state
@@ -62,26 +66,32 @@ export function login(email, password){
   return loginEmailPassword()
 }
 
+const provider = new GoogleAuthProvider();
 
-// // Monitor auth state
-// const monitorAuthState = async () => {
-//   onAuthStateChanged(auth, user => {
-//     if (user) {
-//       console.log(user)
-//       showApp()
-//       showLoginState(user)
+export function signInWithGooglePopup(auth, provider) {
+  signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user;
+    console.log(user)
+    return { success: true, user: user }
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+}
 
-//       hideLoginError()
-//       hideLinkError()
-//     }
-//     else {
-//       showLoginForm()
-//       lblAuthState.innerHTML = `You're not logged in.`
-//     }
-//   })
-// }
-
-// Log out (not used yet)
 export function logOut() {
   const logout = async () => {
     await signOut(auth);

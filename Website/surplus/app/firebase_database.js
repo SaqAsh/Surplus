@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getDatabase, ref, set, onValue } from "firebase/database";
 
 const firebaseConfig = {
@@ -12,14 +12,16 @@ const firebaseConfig = {
     measurementId: "G-3KJHKHQJXW"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
 
 let username = "test";
 
-export function setUsername(changedUsername){
+export function changeUsername(changedUsername){
     username = changedUsername;
 }
-
+    
 export function writeUserData(email, goal, budget,
     investmentPrefs, investments, finances){
 

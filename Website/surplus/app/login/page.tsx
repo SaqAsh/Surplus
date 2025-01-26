@@ -9,7 +9,7 @@ import Link from "next/link"
 import { login } from './firebase_auth_db';
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { setUsername } from '../firebase_database';
+import { changeUsername } from '../firebase_database';
 
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
@@ -27,7 +27,7 @@ export default function Login() {
       const result = await login(username, password);
       if (result.success) {
         // Successful login
-        setUsername(username);
+        changeUsername(username);
         setIsLoading(false);
         router.push('/'); // Navigate to main page
       } else {
