@@ -231,7 +231,62 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        <div class="empty-state">No financial data tracked yet</div>
+                        <div id="finances-container">
+                            <div class="finance-card">
+                                <div class="finance-title">Current Balance</div>
+                                <div class="finance-amount">$10,000.00</div>
+                                <div class="finance-details">
+                                    <div>
+                                        <span>Last Updated:</span>
+                                        <span>${new Date().toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="finance-card">
+                                <div class="finance-title">Monthly Income</div>
+                                <div class="finance-amount positive">$5,000.00</div>
+                                <div class="finance-details">
+                                    <div>
+                                        <span>Salary:</span>
+                                        <span>$4,500.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Investments:</span>
+                                        <span>$300.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Other:</span>
+                                        <span>$200.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="finance-card">
+                                <div class="finance-title">Monthly Expenses</div>
+                                <div class="finance-amount negative">$3,000.00</div>
+                                <div class="finance-details">
+                                    <div>
+                                        <span>Housing:</span>
+                                        <span>$1,500.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Utilities:</span>
+                                        <span>$300.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Food:</span>
+                                        <span>$600.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Transportation:</span>
+                                        <span>$400.00</span>
+                                    </div>
+                                    <div>
+                                        <span>Other:</span>
+                                        <span>$200.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
