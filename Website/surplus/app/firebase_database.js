@@ -16,8 +16,8 @@ const app = initializeApp(firebaseConfig);
 
 let username = "test";
 
-export function setUsername(changeUsername){
-    username = changeUsername;
+export function setUsername(changedUsername){
+    username = changedUsername;
 }
 
 export function writeUserData(email, goal, budget,
