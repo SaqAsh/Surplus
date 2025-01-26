@@ -2,7 +2,7 @@
 import { create } from "domain";
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
-  GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+  GoogleAuthProvider, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -66,10 +66,10 @@ export function login(email, password){
   return loginEmailPassword()
 }
 
-const provider = new GoogleAuthProvider();
+const providerGoogle = new GoogleAuthProvider();
 
 export function signInWithGooglePopup() {
-  return signInWithPopup(auth, provider)
+  return signInWithPopup(auth, providerGoogle)
     .then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -93,6 +93,32 @@ export function signInWithGooglePopup() {
     });
 }
 
+const providerGithub = new GithubAuthProvider();
+export function signInWithGithubPopup() {
+  return signInWithPopup(auth, providerGithub)
+    .then((result) => {
+      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+      const credential = GithubAuthProvider.credentialFromResult(result);
+      const token = credential.accessToken;
+
+      // The signed-in user info.
+      const user = result.user;
+      return { 
+        success: true, 
+        user: user,
+        errorMessage: null  // Add this to maintain consistent return type
+      };
+    }).catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      return {
+        success: false,
+        user: null,        // Add this to maintain consistent return type
+        errorMessage: errorMessage
+      };
+  });
+}
 export function logOut() {
   const logout = async () => {
     await signOut(auth);
