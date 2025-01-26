@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
 import { login , signInWithGooglePopup} from './firebase_auth_db';
+import { FcGoogle } from "react-icons/fc";
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { changeUsername } from '../firebase_database';
@@ -90,7 +91,7 @@ export default function Login() {
                   console.error('Error during Google login:', error);
                 }
               }}>
-                Login with Google
+                <FcGoogle /> Login with Google
               </Button>
               {errorMessage && ( // Render Error Message if one is provided. Otherwise, render nothing
                 <div className="space-y-2">
