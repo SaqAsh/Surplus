@@ -21,7 +21,7 @@ export default function Home() {
             </p>
             <div className="space-x-4">
               <Button asChild size="lg">
-                <Link href="vscode:extension/surplus">Install Now</Link>
+                <Link href="https://marketplace.visualstudio.com/items?itemName=Surplus.surplus&ssr=false#review-details">Install Now</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="/signup">Create Account</Link>
