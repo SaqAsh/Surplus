@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Link from "next/link"
-import { login } from './firebase_auth_db';
+import { login , signInWithGooglePopup} from './firebase_auth_db';
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { changeUsername } from '../firebase_database';
@@ -76,6 +76,21 @@ export default function Login() {
               </div>
               <Button className="w-full" type="submit" disabled={isLoading}>
                 {isLoading ? "Logging in..." : "Login"}
+              </Button>
+              <Button className="w-full mt-2" variant="outline" onClick={async () => {
+                try {
+                  const result = await signInWithGooglePopup();
+                  if (result.success) {
+                    router.push('/');
+                  } else {
+                    setErrorMessage(result.errorMessage || 'An error occurred during Google login');
+                  }
+                } catch (error) {
+                  setErrorMessage('An error occurred during Google login');
+                  console.error('Error during Google login:', error);
+                }
+              }}>
+                Login with Google
               </Button>
               {errorMessage && ( // Render Error Message if one is provided. Otherwise, render nothing
                 <div className="space-y-2">
