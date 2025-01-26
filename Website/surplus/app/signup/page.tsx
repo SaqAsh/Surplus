@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { signup } from './firebase_auth_db';
-import { setUsername } from '../firebase_database';
+import { changeUsername } from '../firebase_database';
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +26,7 @@ export default function SignUp() {
       const result = await signup(username, password);
       if (result.success) {
         // Successful login
-        setUsername(username);
+        changeUsername(username);
         setIsLoading(false);
         router.push('/'); // Navigate to main page
       } else {
