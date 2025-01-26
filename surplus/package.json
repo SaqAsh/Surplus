@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/SaqAsh/Surplus"
   },
-  "version": "0.0.7",
+  "version": "0.0.8",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -15,7 +15,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "onStartupFinished",
+    "onUri"
   ],
   "main": "./out/extension.js",
   "icon": "resources/upscaled_logo_enhanced.png",

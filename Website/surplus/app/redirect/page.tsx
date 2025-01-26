@@ -10,13 +10,20 @@ export default function Redirect() {
   const {token} = useAuth();
 
   useEffect(() => {
-    // Simulate redirect delay
-    const timer = setTimeout(() => {
-      window.location.href =  `vscode:extension/surplus?token=${token}`
-    }, 3000)
+    if (!token) {
+      console.error('No token available for redirect');
+      return;
+    }
 
-    return () => clearTimeout(timer)
-  }, [])
+    console.log('Redirecting with token:', token);
+    const timer = setTimeout(() => {
+      const vsCodeUri = `vscode://surplus?token=${encodeURIComponent(token)}`;
+      console.log('Redirecting to:', vsCodeUri);
+      window.location.href = vsCodeUri;
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [token]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -31,7 +38,8 @@ export default function Redirect() {
               variant="link"
               className="p-0 h-auto font-normal"
               onClick={() => {
-                window.location.href =  `vscode:extension/surplus?token=${token}`;
+                const vsCodeUri = `vscode://surplus?token=${encodeURIComponent(token!)}`;
+                window.location.href = vsCodeUri;
               }}
             >
               here

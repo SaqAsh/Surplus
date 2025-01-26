@@ -98,7 +98,6 @@ async function handleLogin() {
         });
         if (email && password) {
             // Implement actual login logic here
-            handleTokenAuthentication('eyJhbGciOiJSUzI1NiIsImtpZCI6IjgxYjUyMjFlN2E1ZGUwZTVhZjQ5N2UzNzVhNzRiMDZkODJiYTc4OGIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vc3VycGx1cy1hZWQ3OSIsImF1ZCI6InN1cnBsdXMtYWVkNzkiLCJhdXRoX3RpbWUiOjE3Mzc4Nzc0MzcsInVzZXJfaWQiOiI5Z2V2cjB4WUFuZWtSczJleWVzUHc5ZU9BVHAyIiwic3ViIjoiOWdldnIweFlBbmVrUnMyZXllc1B3OWVPQVRwMiIsImlhdCI6MTczNzg3NzQzNywiZXhwIjoxNzM3ODgxMDM3LCJlbWFpbCI6InRlc3RAdGVzdC50ZXN0IiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJmaXJlYmFzZSI6eyJpZGVudGl0aWVzIjp7ImVtYWlsIjpbInRlc3RAdGVzdC50ZXN0Il19LCJzaWduX2luX3Byb3ZpZGVyIjoicGFzc3dvcmQifX0.NKptQ0VAISe5f1k3IaQW-HM6Vzw8Dxkcz26mJrR162zTDuKGRpe2piJUa3QVlzcvfcujKF-xFa0FYLf3vODG9yt1WU7Rm9thnidpxKxE4fJd7ieVwD6n3YVsTYGDqvN3eO0t8D_dBZIPxUYZ2sA3Dw0HKXeiORaSvt4jKM51CuWuv2J-BlefjsS09xA8Of-K3Qg5HVo8CFjQ8vp2YI2PBXszpmdNMuaDzjS7CTZeNMLGpmMtFOYzZSl312-UVEEUAiV4TPXARlNabBxSYPmLvgqXJ9ifH0E0DfRzd09G77yHHy9gZ8uRqZSYGKK6jdyK-ISCUwD1ZyXpFwJQ3UnOAw');
             statusBar.setLoggedInUser(email);
             notificationManager.scheduleNotifications();
             vscode.window.showInformationMessage('Successfully logged in!');
