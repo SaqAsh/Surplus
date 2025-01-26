@@ -3,3 +3,6 @@ node_modules/
 .env
 .vscode/
 dist/
+src/firebaseKeys/
+/firebaseKeys
+out/

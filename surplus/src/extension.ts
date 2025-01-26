@@ -5,6 +5,7 @@ import { SurplusStatusBar } from './statusBar';
 import { SurplusAuthProvider } from './auth';
 import { SurplusNotificationManager } from './notifications';
 import { DashboardViewProvider } from './webview/DashboardViewProvider';
+import reverseLookUp from './firebase/adminFunctions';
 
 let statusBar: SurplusStatusBar;
 let notificationManager: SurplusNotificationManager;
@@ -26,6 +27,24 @@ export async function activate(context: vscode.ExtensionContext) {
 			DashboardViewProvider.viewType,
 			new DashboardViewProvider(context.extensionUri)
 		)
+	);
+
+	// Add URI handler registration
+	context.subscriptions.push(
+		vscode.window.registerUriHandler({
+			handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
+				if (uri.path === '/surplus') {
+					const queryParams = new URLSearchParams(uri.query);
+					const token = queryParams.get('token');
+					
+					if (token) {
+						handleTokenAuthentication(token);
+					} else {
+						vscode.window.showErrorMessage('No authentication token provided');
+					}
+				}
+			}
+		})
 	);
 
 	// Register commands
@@ -124,6 +143,37 @@ async function handleViewDashboard() {
 		vscode.window.showInformationMessage('Dashboard opened!');
 	} catch (error) {
 		vscode.window.showErrorMessage('Failed to open dashboard.');
+	}
+}
+
+async function handleTokenAuthentication(token: string) {
+	try {
+		// Use the reverse lookup function to verify token and get user info
+		const userInfo = await reverseLookUp(token);
+		
+		if (!userInfo) {
+			throw new Error('Failed to get user info');
+		}
+
+		// Update status bar and auth state
+		const authProvider = SurplusAuthProvider.getInstance();
+		authProvider.setAuthenticated(true, userInfo);
+		statusBar.setLoggedInUser(userInfo.email || userInfo.displayName || 'User');
+		
+		// Schedule notifications for the authenticated user
+		notificationManager.scheduleNotifications();
+		
+		// Show success message
+		vscode.window.showInformationMessage(`Successfully authenticated as ${userInfo.email || userInfo.displayName || 'User'}`);
+		
+	} catch (error) {
+		vscode.window.showErrorMessage('Failed to authenticate: Invalid or expired token');
+		console.error('Authentication error:', error);
+		
+		// Reset auth state on failure
+		const authProvider = SurplusAuthProvider.getInstance();
+		authProvider.setAuthenticated(false);
+		statusBar.clearLoggedInUser();
 	}
 }
 

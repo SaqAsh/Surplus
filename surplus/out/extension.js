@@ -32,6 +32,9 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
@@ -42,6 +45,7 @@ const statusBar_1 = require("./statusBar");
 const auth_1 = require("./auth");
 const notifications_1 = require("./notifications");
 const DashboardViewProvider_1 = require("./webview/DashboardViewProvider");
+const adminFunctions_1 = __importDefault(require("./firebase/adminFunctions"));
 let statusBar;
 let notificationManager;
 // This method is called when your extension is activated
@@ -55,6 +59,21 @@ async function activate(context) {
     console.log('Congratulations, your extension "surplus" is now active!');
     // Register the webview provider
     context.subscriptions.push(vscode.window.registerWebviewViewProvider(DashboardViewProvider_1.DashboardViewProvider.viewType, new DashboardViewProvider_1.DashboardViewProvider(context.extensionUri)));
+    // Add URI handler registration
+    context.subscriptions.push(vscode.window.registerUriHandler({
+        handleUri(uri) {
+            if (uri.path === '/surplus') {
+                const queryParams = new URLSearchParams(uri.query);
+                const token = queryParams.get('token');
+                if (token) {
+                    handleTokenAuthentication(token);
+                }
+                else {
+                    vscode.window.showErrorMessage('No authentication token provided');
+                }
+            }
+        }
+    }));
     // Register commands
     let disposables = [
         vscode.commands.registerCommand('surplus.login', () => handleLogin()),
@@ -142,6 +161,31 @@ async function handleViewDashboard() {
     }
     catch (error) {
         vscode.window.showErrorMessage('Failed to open dashboard.');
+    }
+}
+async function handleTokenAuthentication(token) {
+    try {
+        // Use the reverse lookup function to verify token and get user info
+        const userInfo = await (0, adminFunctions_1.default)(token);
+        if (!userInfo) {
+            throw new Error('Failed to get user info');
+        }
+        // Update status bar and auth state
+        const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        authProvider.setAuthenticated(true, userInfo);
+        statusBar.setLoggedInUser(userInfo.email || userInfo.displayName || 'User');
+        // Schedule notifications for the authenticated user
+        notificationManager.scheduleNotifications();
+        // Show success message
+        vscode.window.showInformationMessage(`Successfully authenticated as ${userInfo.email || userInfo.displayName || 'User'}`);
+    }
+    catch (error) {
+        vscode.window.showErrorMessage('Failed to authenticate: Invalid or expired token');
+        console.error('Authentication error:', error);
+        // Reset auth state on failure
+        const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        authProvider.setAuthenticated(false);
+        statusBar.clearLoggedInUser();
     }
 }
 // Additional command handlers...

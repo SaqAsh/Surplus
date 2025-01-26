@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, onAuthStateChanged, connectAuthEmulator, createUserWithEmailAndPassword } from "firebase/auth";
+import { getApp, getApps, initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -54,27 +54,3 @@ export function signup(email, password){
   return createAccount()
 }
 
-// // Monitor auth state
-// const monitorAuthState = async () => {
-//   onAuthStateChanged(auth, user => {
-//     if (user) {
-//       console.log(user)
-//       showApp()
-//       showLoginState(user)
-
-//       hideLoginError()
-//       hideLinkError()
-//     }
-//     else {
-//       showLoginForm()
-//       lblAuthState.innerHTML = `You're not logged in.`
-//     }
-//   })
-// }
-
-// // Log out
-// const logout = async () => {
-//   await signOut(auth);
-// }
-
-// monitorAuthState();
