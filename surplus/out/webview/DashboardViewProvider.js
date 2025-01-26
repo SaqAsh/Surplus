@@ -141,7 +141,7 @@ class DashboardViewProvider {
                     </div>
                     <div class="accordion-content">
                         <div id="finances-container">
-                            <div class="finance-card"> // tie this to the user data, change from const
+                            <div class="finance-card"> 
                                 <div class="finance-title">Current Balance</div>
                                 <div class="finance-amount">$10,000.00</div>
                             </div>
