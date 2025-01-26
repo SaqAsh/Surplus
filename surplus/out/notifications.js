@@ -36,9 +36,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SurplusNotificationManager = void 0;
 const vscode = __importStar(require("vscode"));
 class SurplusNotificationManager {
-    context;
-    tasks = [];
     constructor(context) {
+        this.tasks = [];
         this.context = context;
     }
     addTask(task) {

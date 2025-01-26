@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SurplusWebviewProvider = void 0;
 class SurplusWebviewProvider {
-    context;
     constructor(context) {
         this.context = context;
     }

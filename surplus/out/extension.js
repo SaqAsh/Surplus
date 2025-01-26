@@ -32,9 +32,6 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
@@ -45,7 +42,7 @@ const statusBar_1 = require("./statusBar");
 const auth_1 = require("./auth");
 const notifications_1 = require("./notifications");
 const DashboardViewProvider_1 = require("./webview/DashboardViewProvider");
-const adminFunctions_1 = __importDefault(require("./firebase/adminFunctions"));
+const database_1 = require("./database");
 let statusBar;
 let notificationManager;
 // This method is called when your extension is activated
@@ -75,9 +72,12 @@ async function activate(context) {
     let disposables = [
         vscode.commands.registerCommand('surplus.login', () => handleLogin()),
         vscode.commands.registerCommand('surplus.logout', () => handleLogout()),
+        vscode.commands.registerCommand('surplus.signup', () => handleSignup()),
         vscode.commands.registerCommand('surplus.addTask', () => handleAddTask()),
         vscode.commands.registerCommand('surplus.addExpense', () => handleAddExpense()),
-        vscode.commands.registerCommand('surplus.viewDashboard', () => handleViewDashboard()),
+        vscode.commands.registerCommand('surplus.addStock', () => handleAddStock()),
+        vscode.commands.registerCommand('surplus.addGoal', () => handleAddGoal()),
+        vscode.commands.registerCommand('surplus.viewDashboard', () => handleViewDashboard())
     ];
     context.subscriptions.push(...disposables);
     // Initialize status bar
@@ -94,10 +94,16 @@ async function handleLogin() {
             password: true,
         });
         if (email && password) {
-            // Implement actual login logic here
-            statusBar.setLoggedInUser(email);
-            notificationManager.scheduleNotifications();
-            vscode.window.showInformationMessage('Successfully logged in!');
+            const authProvider = auth_1.SurplusAuthProvider.getInstance();
+            const success = await authProvider.login(email, password);
+            if (success) {
+                statusBar.setLoggedInUser(email);
+                notificationManager.scheduleNotifications();
+                vscode.window.showInformationMessage('Successfully logged in!');
+            }
+            else {
+                throw new Error('Login failed');
+            }
         }
     }
     catch (error) {
@@ -107,8 +113,10 @@ async function handleLogin() {
 async function handleLogout() {
     try {
         const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        const dbManager = database_1.DatabaseManager.getInstance();
         authProvider.logout();
         statusBar.clearLoggedInUser();
+        dbManager.clearStockDisplay(); // Clear stock display on logout
         vscode.window.showInformationMessage('Successfully logged out!');
     }
     catch (error) {
@@ -135,6 +143,11 @@ async function handleAddTask() {
 }
 async function handleAddExpense() {
     try {
+        const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        if (!authProvider.isLoggedIn()) {
+            vscode.window.showErrorMessage('Please log in first');
+            return;
+        }
         const description = await vscode.window.showInputBox({
             prompt: 'Enter expense description',
             placeHolder: 'Groceries',
@@ -143,8 +156,26 @@ async function handleAddExpense() {
             prompt: 'Enter amount',
             placeHolder: '50.00',
         });
+        const category = await vscode.window.showQuickPick([
+            'Food & Dining',
+            'Transportation',
+            'Shopping',
+            'Bills & Utilities',
+            'Entertainment',
+            'Other'
+        ], {
+            placeHolder: 'Select category'
+        });
         if (description && amount) {
-            vscode.window.showInformationMessage(`Expense "${description}" added successfully!`);
+            const dbManager = database_1.DatabaseManager.getInstance();
+            await dbManager.addExpense(authProvider.getUsername(), {
+                description,
+                amount: Number(amount),
+                date: new Date().toISOString().split('T')[0],
+                category: category || 'Other'
+            });
+            // Refresh dashboard
+            vscode.commands.executeCommand('surplus.dashboard.refresh');
         }
     }
     catch (error) {
@@ -161,32 +192,122 @@ async function handleViewDashboard() {
     }
 }
 async function handleTokenAuthentication(token) {
+    const authProvider = auth_1.SurplusAuthProvider.getInstance();
     try {
-        // Use the reverse lookup function to verify token and get user info
-        const userInfo = await (0, adminFunctions_1.default)(token);
-        if (!userInfo) {
-            throw new Error('Failed to get user info');
+        const isValid = await authProvider.verifyToken(token);
+        if (isValid) {
+            const user = authProvider.getCurrentUser();
+            statusBar.setLoggedInUser(user.email || user.displayName || 'User');
+            notificationManager.scheduleNotifications();
+            vscode.window.showInformationMessage(`Successfully authenticated as ${user.email || user.displayName}`);
         }
-        // Update status bar and auth state
-        const authProvider = auth_1.SurplusAuthProvider.getInstance();
-        authProvider.setAuthenticated(true, userInfo);
-        statusBar.setLoggedInUser(userInfo.email || userInfo.displayName || 'User');
-        // Schedule notifications for the authenticated user
-        notificationManager.scheduleNotifications();
-        // Show success message
-        vscode.window.showInformationMessage(`Successfully authenticated as ${userInfo.email || userInfo.displayName || 'User'}`);
+        else {
+            throw new Error('Token validation failed');
+        }
     }
     catch (error) {
-        vscode.window.showErrorMessage('Failed to authenticate: Invalid or expired token');
+        vscode.window.showErrorMessage('Authentication failed: Invalid or expired token');
         console.error('Authentication error:', error);
-        // Reset auth state on failure
-        const authProvider = auth_1.SurplusAuthProvider.getInstance();
         authProvider.setAuthenticated(false);
         statusBar.clearLoggedInUser();
+    }
+}
+async function handleAddStock() {
+    try {
+        const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        if (!authProvider.isLoggedIn()) {
+            vscode.window.showErrorMessage('Please log in first');
+            return;
+        }
+        const stockSymbol = await vscode.window.showInputBox({
+            prompt: 'Enter stock symbol (e.g., $TSLA)',
+            placeHolder: '$TSLA',
+            validateInput: (value) => {
+                if (!value.startsWith('$')) {
+                    return 'Stock symbol must start with $';
+                }
+                if (value.length < 2) {
+                    return 'Please enter a valid stock symbol';
+                }
+                return null;
+            }
+        });
+        if (stockSymbol) {
+            const dbManager = database_1.DatabaseManager.getInstance();
+            await dbManager.updateInvestmentPrefs(authProvider.getUsername(), stockSymbol);
+            // Update dashboard if it's open
+            vscode.commands.executeCommand('surplus.dashboard.refresh');
+        }
+    }
+    catch (error) {
+        vscode.window.showErrorMessage('Failed to add stock symbol.');
+    }
+}
+async function handleSignup() {
+    try {
+        const email = await vscode.window.showInputBox({
+            prompt: 'Enter your email',
+            placeHolder: 'email@example.com',
+        });
+        const password = await vscode.window.showInputBox({
+            prompt: 'Enter your password',
+            password: true,
+        });
+        if (email && password) {
+            const authProvider = auth_1.SurplusAuthProvider.getInstance();
+            const success = await authProvider.signup(email, password);
+            if (success) {
+                statusBar.setLoggedInUser(email);
+                vscode.window.showInformationMessage('Successfully signed up! You are now logged in.');
+            }
+            else {
+                throw new Error('Signup failed');
+            }
+        }
+    }
+    catch (error) {
+        vscode.window.showErrorMessage('Signup failed. Please try again.');
+    }
+}
+async function handleAddGoal() {
+    try {
+        const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        if (!authProvider.isLoggedIn()) {
+            vscode.window.showErrorMessage('Please log in first');
+            return;
+        }
+        const title = await vscode.window.showInputBox({
+            prompt: 'Enter goal title',
+            placeHolder: 'New Car'
+        });
+        const targetAmount = await vscode.window.showInputBox({
+            prompt: 'Enter target amount',
+            placeHolder: '50000'
+        });
+        const deadline = await vscode.window.showInputBox({
+            prompt: 'Enter deadline (YYYY-MM-DD)',
+            placeHolder: '2024-12-31'
+        });
+        if (title && targetAmount && deadline) {
+            const dbManager = database_1.DatabaseManager.getInstance();
+            await dbManager.addGoal(authProvider.getUsername(), {
+                title,
+                targetAmount: Number(targetAmount),
+                currentAmount: 0,
+                deadline
+            });
+            // Refresh dashboard
+            vscode.commands.executeCommand('surplus.dashboard.refresh');
+        }
+    }
+    catch (error) {
+        vscode.window.showErrorMessage('Failed to add goal. Please try again.');
     }
 }
 // Additional command handlers...
 function deactivate() {
     statusBar.dispose();
+    const dbManager = database_1.DatabaseManager.getInstance();
+    dbManager.cleanup();
 }
 //# sourceMappingURL=extension.js.map

@@ -36,7 +36,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SurplusStatusBar = void 0;
 const vscode = __importStar(require("vscode"));
 class SurplusStatusBar {
-    statusBarItem;
     constructor() {
         this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     }

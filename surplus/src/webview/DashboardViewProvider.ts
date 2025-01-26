@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { SurplusAuthProvider } from '../auth';
+import { DatabaseManager } from '../database';
 
 export class DashboardViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'surplus.dashboardView';
@@ -7,9 +8,25 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
 
     constructor(
         private readonly _extensionUri: vscode.Uri,
-    ) {}
+    ) {
+        // Set up real-time listeners when provider is created
+        const dbManager = DatabaseManager.getInstance();
+        const authProvider = SurplusAuthProvider.getInstance();
 
-    public resolveWebviewView(
+        // Listen for database changes
+        setInterval(async () => {
+            if (this._view && authProvider.isLoggedIn()) {
+                const username = authProvider.getUsername();
+                
+                // Set up listeners for all data types
+                dbManager.onStocksChange(username, () => this.updateDashboard());
+                dbManager.onGoalsChange(username, () => this.updateDashboard());
+                dbManager.onExpensesChange(username, () => this.updateDashboard());
+            }
+        }, 1000); // Check every second if we need to update
+    }
+
+    public async resolveWebviewView(
         webviewView: vscode.WebviewView,
         context: vscode.WebviewViewResolveContext,
         _token: vscode.CancellationToken,
@@ -20,13 +37,19 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
             localResourceRoots: [this._extensionUri]
         };
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+        webviewView.webview.html = await this._getHtmlForWebview(webviewView.webview);
     }
 
-    private _getHtmlForWebview(webview: vscode.Webview) {
+    private async _getHtmlForWebview(webview: vscode.Webview) {
         const authProvider = SurplusAuthProvider.getInstance();
-        const user = authProvider.getCurrentUser();
-        const welcomeMessage = user ? `Welcome, ${user.email || user.displayName || 'User'}!` : 'Welcome to Surplus!';
+        const dbManager = DatabaseManager.getInstance();
+        const username = authProvider.getUsername();
+        
+        // Get user's data
+        const stocks = await dbManager.readInvestmentPrefs(username);
+        const goals = await dbManager.readGoals(username);
+        const expenses = await dbManager.readExpenses(username);
+        const stockSymbols = stocks ? stocks.split(',') : [];
 
         return `
             <!DOCTYPE html>
@@ -134,10 +157,74 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         color: var(--vscode-foreground);
                         font-weight: bold;
                     }
+                    .progress-bar {
+                        width: 100%;
+                        height: 20px;
+                        background-color: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 10px;
+                        overflow: hidden;
+                        margin: 8px 0;
+                    }
+                    .progress-fill {
+                        height: 100%;
+                        background-color: var(--vscode-charts-blue);
+                        transition: width 0.3s ease;
+                    }
+                    .goal-card {
+                        background: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 4px;
+                        padding: 12px;
+                        margin-bottom: 8px;
+                    }
+                    .goal-title {
+                        font-weight: bold;
+                        margin-bottom: 4px;
+                    }
+                    .goal-amount {
+                        color: var(--vscode-charts-blue);
+                    }
+                    .goal-deadline {
+                        color: var(--vscode-descriptionForeground);
+                        font-size: 0.9em;
+                    }
+                    .expense-card {
+                        background: var(--vscode-editor-background);
+                        border: 1px solid var(--vscode-widget-border);
+                        border-radius: 4px;
+                        padding: 12px;
+                        margin-bottom: 8px;
+                    }
+                    .expense-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 4px;
+                    }
+                    .expense-description {
+                        font-weight: bold;
+                    }
+                    .expense-amount {
+                        color: var(--vscode-charts-red);
+                    }
+                    .expense-details {
+                        display: flex;
+                        justify-content: space-between;
+                        color: var(--vscode-descriptionForeground);
+                        font-size: 0.9em;
+                    }
+                    .category-tag {
+                        background: var(--vscode-badge-background);
+                        color: var(--vscode-badge-foreground);
+                        padding: 2px 6px;
+                        border-radius: 12px;
+                        font-size: 0.8em;
+                    }
                 </style>
             </head>
             <body>
-                <div class="welcome-message">${welcomeMessage}</div>
+                <div class="welcome-message">Welcome to Surplus!</div>
                 <div class="accordion">
                     <div class="accordion-header">
                         <span>Finances</span>
@@ -155,9 +242,8 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                     </div>
                     <div class="accordion-content">
                         <div id="stock-container">
-                            <!-- Stock cards will be dynamically inserted here -->
+                            ${stockSymbols.length ? '' : '<div class="empty-state">No stocks tracked yet</div>'}
                         </div>
-               
                     </div>
                 </div>
 
@@ -177,13 +263,42 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                         <span class="accordion-icon">▶</span>
                     </div>
                     <div class="accordion-content">
-                        <div class="empty-state">No financial goals set yet</div>
+                        ${goals.length ? goals.map(goal => `
+                            <div class="goal-card">
+                                <div class="goal-title">${goal.title}</div>
+                                <div class="goal-amount">$${goal.currentAmount.toFixed(2)} / $${goal.targetAmount.toFixed(2)}</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${(goal.currentAmount / goal.targetAmount * 100)}%"></div>
+                                </div>
+                                <div class="goal-deadline">Deadline: ${goal.deadline}</div>
+                            </div>
+                        `).join('') : '<div class="empty-state">No financial goals set yet</div>'}
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <div class="accordion-header">
+                        <span>Recent Expenses</span>
+                        <span class="accordion-icon">▶</span>
+                    </div>
+                    <div class="accordion-content">
+                        ${expenses.length ? expenses.map(expense => `
+                            <div class="expense-card">
+                                <div class="expense-header">
+                                    <div class="expense-description">${expense.description}</div>
+                                    <div class="expense-amount">-$${expense.amount.toFixed(2)}</div>
+                                </div>
+                                <div class="expense-details">
+                                    <div class="expense-date">${expense.date}</div>
+                                    <div class="category-tag">${expense.category || 'Other'}</div>
+                                </div>
+                            </div>
+                        `).join('') : '<div class="empty-state">No expenses tracked yet</div>'}
                     </div>
                 </div>
 
                 <script>
                     const accordions = document.querySelectorAll('.accordion');
-                    
                     accordions.forEach(accordion => {
                         const header = accordion.querySelector('.accordion-header');
                         header.addEventListener('click', () => {
@@ -192,121 +307,63 @@ export class DashboardViewProvider implements vscode.WebviewViewProvider {
                     });
 
                     const FINNHUB_API_KEY = 'cuaoichr01qof06j1sl0cuaoichr01qof06j1slg';
-                    const STOCK_SYMBOLS = ['AAPL', 'TM', 'GOOGL', 'AMZN', 'ORCL', 'TMUS'];
-
-                    async function createChart(symbol, data) {
-                        const ctx = document.getElementById(\`chart-\${symbol}\`);
-
-                        // Calculate min and max with 5% padding
-                        const values = [data.o, data.c, data.h, data.l];
-                        const min = Math.min(...values);
-                        const max = Math.max(...values);
-                        const padding = (max - min) * 0.3;
-                        
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: ['Open', 'Current', 'High', 'Low'],
-                                datasets: [{
-                                    label: symbol,
-                                    data: values,
-                                    backgroundColor: [
-                                        '#8794D4',  // Open - darker pastel blue
-                                        data.d > 0 ? '#8FB3A0' : '#D48787',  // Current - darker pastel green if up, darker pastel pink if down
-                                        '#B187D4',  // High - darker pastel purple
-                                        '#D487B1'   // Low - darker pastel pink
-                                    ],
-                                    borderWidth: 1,
-                                    borderRadius: 4
-                                }]
-                            },
-
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    }
-                                },
-                                scales: {
-                                     y: {
-                                        min: min - padding,
-                                        max: max + padding,
-                                        ticks: {
-                                            stepSize: 1,
-                                            callback: value => '$' + value.toFixed(2)
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
+                    const STOCK_SYMBOLS = ${JSON.stringify(stockSymbols)};
 
                     async function updateStockPrice() {
                         const stockContainer = document.getElementById('stock-container');
-                        // Clear existing content first
-                        stockContainer.innerHTML = '';
+                        if (!STOCK_SYMBOLS.length) return;
                         
-                        // Only loop through our defined STOCK_SYMBOLS
+                        stockContainer.innerHTML = STOCK_SYMBOLS.map(symbol => \`
+                            <div class="stock-card" id="stock-\${symbol}">
+                                <div class="stock-symbol">\${symbol}</div>
+                                <div class="stock-price">Loading...</div>
+                                <div class="stock-change">--</div>
+                            </div>
+                        \`).join('');
+
                         for (const symbol of STOCK_SYMBOLS) {
                             try {
                                 const response = await fetch(
-                                    \`https://finnhub.io/api/v1/quote?symbol=\${symbol}&token=\${FINNHUB_API_KEY}\`
+                                    \`https://finnhub.io/api/v1/quote?symbol=\${symbol.replace('$', '')}&token=\${FINNHUB_API_KEY}\`
                                 );
                                 const data = await response.json();
                                 
-                                // Create a new div for each stock
-                                const stockDiv = document.createElement('div');
-                                stockDiv.className = 'stock-card';
-                                stockDiv.id = \`stock-\${symbol}\`;
-                                stockDiv.innerHTML = \`
-                                    <div class="stock-symbol">\${symbol}</div>
-                                    <div class="stock-price">$\${data.c.toFixed(2)}</div>
-                                    <div class="stock-change \${data.d > 0 ? 'positive' : 'negative'}">
-                                        \${data.d > 0 ? '▲' : '▼'} $\${Math.abs(data.d).toFixed(2)} (\${data.dp.toFixed(2)}%)
-                                    </div>
-                                    <canvas class="stock-chart" id="chart-\${symbol}"></canvas>
-                                \`;
-                                
-                                stockContainer.appendChild(stockDiv);
-                                await createChart(symbol, data);
+                                const container = document.getElementById(\`stock-\${symbol}\`);
+                                if (container && data.c) {
+                                    container.innerHTML = \`
+                                        <div class="stock-symbol">\${symbol}</div>
+                                        <div class="stock-price">$\${data.c.toFixed(2)}</div>
+                                        <div class="stock-change \${data.d > 0 ? 'positive' : 'negative'}">
+                                            \${data.d > 0 ? '▲' : '▼'} $\${Math.abs(data.d).toFixed(2)} (\${data.dp.toFixed(2)}%)
+                                        </div>
+                                    \`;
+                                }
                             } catch (error) {
                                 console.error(\`Error fetching data for \${symbol}:\`, error);
+                                const container = document.getElementById(\`stock-\${symbol}\`);
+                                if (container) {
+                                    container.innerHTML = \`
+                                        <div class="stock-symbol">\${symbol}</div>
+                                        <div class="stock-price">Failed to load</div>
+                                    \`;
+                                }
                             }
                         }
                     }
 
-                    // Immediately call updateStockPrice when the page loads
-                    updateStockPrice();
-                    
-                    // Calculate time until next update (next day at market open - 9:30 AM EST)
-                    function scheduleNextUpdate() {
-                        const now = new Date();
-                        const nextUpdate = new Date(now);
-                        nextUpdate.setHours(9, 30, 0, 0); // 9:30 AM
-                        
-                        if (now >= nextUpdate) {
-                            nextUpdate.setDate(nextUpdate.getDate() + 1); // Move to next day
-                        }
-                        
-                        const timeUntilUpdate = nextUpdate.getTime() - now.getTime();
-                        setTimeout(() => {
-                            updateStockPrice();
-                            scheduleNextUpdate(); // Schedule next update
-                        }, timeUntilUpdate);
+                    if (STOCK_SYMBOLS.length) {
+                        updateStockPrice();
+                        setInterval(updateStockPrice, 60000); // Update every minute
                     }
-                    
-                    scheduleNextUpdate();
                 </script>
             </body>
             </html>
         `;
     }
 
-    public updateDashboard() {
+    public async updateDashboard() {
         if (this._view) {
-            this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+            this._view.webview.html = await this._getHtmlForWebview(this._view.webview);
         }
     }
 } 
