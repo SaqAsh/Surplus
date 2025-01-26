@@ -1,13 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DashboardViewProvider = void 0;
+const auth_1 = require("../auth");
 class DashboardViewProvider {
     _extensionUri;
     static viewType = 'surplus.dashboardView';
+    _view;
     constructor(_extensionUri) {
         this._extensionUri = _extensionUri;
     }
     resolveWebviewView(webviewView, context, _token) {
+        this._view = webviewView;
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [this._extensionUri]
@@ -15,6 +18,9 @@ class DashboardViewProvider {
         webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     }
     _getHtmlForWebview(webview) {
+        const authProvider = auth_1.SurplusAuthProvider.getInstance();
+        const user = authProvider.getCurrentUser();
+        const welcomeMessage = user ? `Welcome, ${user.email || user.displayName || 'User'}!` : 'Welcome to Surplus!';
         return `
             <!DOCTYPE html>
             <html lang="en">
@@ -115,11 +121,16 @@ class DashboardViewProvider {
                         height: 120px;
                         width: 100%;
                     }
-
-
+                    .welcome-message {
+                        font-size: 1.2em;
+                        margin: 16px 0;
+                        color: var(--vscode-foreground);
+                        font-weight: bold;
+                    }
                 </style>
             </head>
             <body>
+                <div class="welcome-message">${welcomeMessage}</div>
                 <div class="accordion">
                     <div class="accordion-header">
                         <span>Finances</span>
@@ -284,6 +295,11 @@ class DashboardViewProvider {
             </body>
             </html>
         `;
+    }
+    updateDashboard() {
+        if (this._view) {
+            this._view.webview.html = this._getHtmlForWebview(this._view.webview);
+        }
     }
 }
 exports.DashboardViewProvider = DashboardViewProvider;

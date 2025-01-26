@@ -33,15 +33,15 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.window.registerUriHandler({
 			handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
-				if (uri.path === '/surplus') {
-					const queryParams = new URLSearchParams(uri.query);
-					const token = queryParams.get('token');
-					
-					if (token) {
-						handleTokenAuthentication(token);
-					} else {
-						vscode.window.showErrorMessage('No authentication token provided');
-					}
+				console.log('Received URI:', uri.toString());
+				const queryParams = new URLSearchParams(uri.query);
+				const token = queryParams.get('token');
+				
+				if (token) {
+					console.log('Received token from URI handler');
+					handleTokenAuthentication(decodeURIComponent(token));
+				} else {
+					vscode.window.showErrorMessage('No authentication token provided');
 				}
 			}
 		})
